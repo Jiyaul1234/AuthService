@@ -16,6 +16,11 @@ namespace Ecommerce.AuthService.Application.DTOs
         [Required(ErrorMessage = "Please Enter Phone Number")]
         [Phone(ErrorMessage = "Invalid Phone Number")]
         public string PhoneNumber { get; set; }
+
+        [Required(ErrorMessage = "Please Enter Password")]
+        [MinLength(6, ErrorMessage = "Password must be at least 6 characters long")]
+        public string Password { get; set; }
+
         public string Role { get; set; }
         public DateTime CreatedDate { get; set; }
     }

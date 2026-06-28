@@ -1,3 +1,13 @@
 <Solution>
+  <Folder Name="/Application/">
+    <Project Path="Ecommerce.AuthService.Application/Ecommerce.AuthService.Application.csproj" />
+  </Folder>
+  <Folder Name="/Domain/">
+    <Project Path="Ecommerce.AuthService.Domain/Ecommerce.AuthService.Domain.csproj" />
+  </Folder>
+  <Folder Name="/Intrastructure/">
+    <Project Path="Ecommerce.AuthService.Infrastructure/Ecommerce.AuthService.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/Tests/" />
   <Project Path="Ecommerce.AuthService.API/Ecommerce.AuthService.API.csproj" />
 </Solution>
