@@ -24,7 +24,7 @@ namespace Ecommerce.AuthService.Application.Services
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public async Task<string> Login(LoginDto loginDto)
+        public async Task<AuthResponseDto> Login(LoginDto loginDto)  
         {
             try
             {
@@ -54,7 +54,22 @@ namespace Ecommerce.AuthService.Application.Services
                 var jwtToken = _jwtTokenService.GenerateToken(user.Id, user.Email, user.Role);
 
                 _logger.LogInformation("Login successful for email: {Email}. JWT token generated.", loginDto.Email);
-                return jwtToken;
+
+                var response = new AuthResponseDto
+                {
+                    Token = jwtToken,
+                    RefreshToken = null, // implement refresh token if needed
+                    User = new UserInfoDto
+                    {
+                        Id = user.Id.ToString(),
+                        Email = user.Email,
+                        FirstName = user.FirstName,
+                        LastName = user.LastName,
+                        MobileNumber = user.MobileNumber
+                    }
+                };
+
+                return response;
             }
             catch (Exception ex)
             {
@@ -63,7 +78,7 @@ namespace Ecommerce.AuthService.Application.Services
             }
         }
 
-        public async Task SingUp(UserDto userDto)
+        public async Task<AuthResponseDto> SingUp(UserDto userDto)
         {
             try
             {
@@ -81,17 +96,39 @@ namespace Ecommerce.AuthService.Application.Services
 
                 // Add new user with encrypted password
                 var encryptedPassword = _encryptionService.Encrypt(userDto.Password);
-                await _userRepository.AddAsync(new Domain.Models.User
+                var newUser = new Domain.Models.User
                 {
-                    Name = userDto.Name,
+                    FirstName = userDto.FirstName,
+                    LastName = userDto.LastName,
                     Email = userDto.Email,
-                    PhoneNumber = userDto.PhoneNumber,
-                    Role = userDto.Role ?? Roles.User.ToString(),
+                    MobileNumber = userDto.MobileNumber,
+                    
                     Password = encryptedPassword,
                     CreatedDate = DateTime.UtcNow
-                });
+                };
+
+                await _userRepository.AddAsync(newUser);
 
                 _logger.LogInformation("SignUp successful for email: {Email}", userDto.Email);
+
+                // Generate token
+                var jwtToken = _jwtTokenService.GenerateToken(newUser.Id, newUser.Email, newUser.Role);
+
+                var response = new AuthResponseDto
+                {
+                    Token = jwtToken,
+                    RefreshToken = null,
+                    User = new UserInfoDto
+                    {
+                        Id = newUser.Id.ToString(),
+                        Email = newUser.Email,
+                        FirstName = newUser.FirstName,
+                        LastName = newUser.LastName,
+                        MobileNumber = newUser.MobileNumber
+                    }
+                };
+
+                return response;
             }
             catch (Exception ex)
             {

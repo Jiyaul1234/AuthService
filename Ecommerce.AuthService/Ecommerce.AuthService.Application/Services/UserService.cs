@@ -122,10 +122,11 @@ namespace Ecommerce.AuthService.Application.Services
                 }
 
                 // map updates
-                existing.Name = userDto.Name;
+                existing.FirstName = userDto.FirstName;
+                existing.LastName = userDto.LastName;
                 existing.Email = userDto.Email;
-                existing.PhoneNumber = userDto.PhoneNumber;
-                existing.Role = userDto.Role;
+                existing.MobileNumber = userDto.MobileNumber;
+             
                 // do not overwrite CreatedDate
 
                 await _userRepository.Update(existing);
@@ -147,10 +148,10 @@ namespace Ecommerce.AuthService.Application.Services
             return new UserDto
             {
                 Id = u.Id,
-                Name = u.Name,
+                FirstName = u.FirstName,
+                LastName = u.LastName,
                 Email = u.Email,
-                PhoneNumber = u.PhoneNumber,
-                Role = u.Role,
+                MobileNumber = u.MobileNumber,         
                 CreatedDate = u.CreatedDate
             };
         }
@@ -162,10 +163,11 @@ namespace Ecommerce.AuthService.Application.Services
             return new User
             {
                 Id = dto.Id,
-                Name = dto.Name,
+                FirstName = dto.FirstName,
+                LastName = dto.LastName,
                 Email = dto.Email,
-                PhoneNumber = dto.PhoneNumber,
-                Role = dto.Role,
+                MobileNumber = dto.MobileNumber,
+              
                 CreatedDate = dto.CreatedDate
             };
         }

@@ -37,14 +37,20 @@ namespace Ecommerce.AuthService.API.Controllers
                 }
 
                 _logger.LogInformation("Login request received for email: {Email}", loginDto.Email);
-                var token = await _authService.Login(loginDto);
+                var authResponse = await _authService.Login(loginDto);
 
                 return Ok(new
                 {
-                    success = true,
-                    message = "Login successful",
-                    token = token,
-                    tokenType = "Bearer"
+                    token = authResponse.Token,
+                    refreshToken = authResponse.RefreshToken,
+                    user = new
+                    {
+                        id = authResponse.User.Id,
+                        email = authResponse.User.Email,
+                        firstName = authResponse.User.FirstName,
+                        lastName = authResponse.User.LastName,
+                        mobileNumber = authResponse.User.MobileNumber
+                    }
                 });
             }
             catch (InvalidOperationException ex)
@@ -70,7 +76,7 @@ namespace Ecommerce.AuthService.API.Controllers
         /// <summary>
         /// SignUp endpoint - registers a new user
         /// </summary>
-        [HttpPost("signup")]
+        [HttpPost("register")]
         [AllowAnonymous]
         public async Task<IActionResult> SignUp([FromBody] UserDto userDto)
         {
@@ -83,12 +89,20 @@ namespace Ecommerce.AuthService.API.Controllers
                 }
 
                 _logger.LogInformation("SignUp request received for email: {Email}", userDto.Email);
-                await _authService.SingUp(userDto);
+                var authResponse = await _authService.SingUp(userDto);
 
                 return Ok(new
                 {
-                    success = true,
-                    message = "User registered successfully. Please login with your credentials."
+                    token = authResponse.Token,
+                    refreshToken = authResponse.RefreshToken,
+                    user = new
+                    {
+                        id = authResponse.User.Id,
+                        email = authResponse.User.Email,
+                        firstName = authResponse.User.FirstName,
+                        lastName = authResponse.User.LastName,
+                        mobileNumber = authResponse.User.MobileNumber
+                    }
                 });
             }
             catch (InvalidOperationException ex)
