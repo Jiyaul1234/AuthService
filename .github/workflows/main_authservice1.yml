@@ -23,17 +23,19 @@ jobs:
         with:
           dotnet-version: '10.x'
 
-      - name: Build with dotnet
-        run: dotnet build --configuration Release
+      - name: Build web project
+        # build the API project directly (paths are nested under Ecommerce.AuthService)
+        run: dotnet build Ecommerce.AuthService/Ecommerce.AuthService.API/Ecommerce.AuthService.API.csproj --configuration Release
 
-      - name: dotnet publish
-        run: dotnet publish -c Release -o "${{env.DOTNET_ROOT}}/AuthService/Ecommerce.AuthService.slnx"
+      - name: Publish web project
+        # publish the API project to a local 'publish' folder in the workspace
+        run: dotnet publish Ecommerce.AuthService/Ecommerce.AuthService.API/Ecommerce.AuthService.API.csproj -c Release -o ./publish
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
           name: .net-app
-          path: ${{env.DOTNET_ROOT}}/AuthService/Ecommerce.AuthService.slnx
+          path: ./publish
 
   deploy:
     runs-on: windows-latest
@@ -47,6 +49,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: .net-app
+          path: ./publish
       
       - name: Login to Azure
         uses: azure/login@v2
@@ -61,5 +64,4 @@ jobs:
         with:
           app-name: 'AuthService1'
           slot-name: 'Production'
-          package: .
-          
+          package: ./publish
