@@ -1,6 +1,4 @@
-# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
-# More GitHub Actions for Azure: https://github.com/Azure/actions
-
+# Build and deploy ASP.Net Core app to Azure Web App - AuthService1
 name: Build and deploy ASP.Net Core app to Azure Web App - AuthService1
 
 on:
@@ -13,7 +11,7 @@ jobs:
   build:
     runs-on: windows-latest
     permissions:
-      contents: read #This is required for actions/checkout
+      contents: read
 
     steps:
       - uses: actions/checkout@v4
@@ -23,13 +21,42 @@ jobs:
         with:
           dotnet-version: '10.x'
 
-      - name: Build web project
-        # build the API project directly (paths are nested under Ecommerce.AuthService)
-        run: dotnet build Ecommerce.AuthService/Ecommerce.AuthService.API/Ecommerce.AuthService.API.csproj --configuration Release
+      - name: Find solution file
+        id: find-sln
+        shell: bash
+        run: |
+          sln=$(git ls-files '*.sln' | head -n1 || true)
+          if [ -z "$sln" ]; then
+            echo "No .sln file found in the repo."
+            exit 1
+          fi
+          echo "Found solution: $sln"
+          echo "sln=$sln" >> $GITHUB_OUTPUT
+
+      - name: Restore
+        run: dotnet restore "${{ steps.find-sln.outputs.sln }}"
+
+      - name: Build solution
+        run: dotnet build "${{ steps.find-sln.outputs.sln }}" --configuration Release --no-restore
+
+      - name: Find API project file
+        id: find-api
+        shell: bash
+        run: |
+          api=$(git ls-files '*Ecommerce.AuthService.API.csproj' | head -n1 || true)
+          # fallback to any project ending with .API.csproj
+          if [ -z "$api" ]; then
+            api=$(git ls-files '*.API.csproj' | head -n1 || true)
+          fi
+          if [ -z "$api" ]; then
+            echo "No API csproj found."
+            exit 1
+          fi
+          echo "Found API project: $api"
+          echo "api=$api" >> $GITHUB_OUTPUT
 
       - name: Publish web project
-        # publish the API project to a local 'publish' folder in the workspace
-        run: dotnet publish Ecommerce.AuthService/Ecommerce.AuthService.API/Ecommerce.AuthService.API.csproj -c Release -o ./publish
+        run: dotnet publish "${{ steps.find-api.outputs.api }}" -c Release -o ./publish
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
@@ -41,8 +68,8 @@ jobs:
     runs-on: windows-latest
     needs: build
     permissions:
-      id-token: write #This is required for requesting the JWT
-      contents: read #This is required for actions/checkout
+      id-token: write
+      contents: read
 
     steps:
       - name: Download artifact from build job
@@ -50,7 +77,7 @@ jobs:
         with:
           name: .net-app
           path: ./publish
-      
+
       - name: Login to Azure
         uses: azure/login@v2
         with:
