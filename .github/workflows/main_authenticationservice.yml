@@ -22,10 +22,10 @@ jobs:
           dotnet-version: '10.x'
 
       - name: Build with dotnet
-        run: dotnet build AuthService\Ecommerce.AuthService\Ecommerce.AuthService.API\Ecommerce.AuthService.API.csproj --configuration Release
+        run: dotnet build Ecommerce.AuthService/Ecommerce.AuthService.API\Ecommerce.AuthService.API.csproj --configuration Release
 
       - name: Publish
-        run: dotnet publish AuthService\Ecommerce.AuthService\Ecommerce.AuthService.API\Ecommerce.AuthService.API.csproj -c Release -o ./myapp
+        run: dotnet publish Ecommerce.AuthService/Ecommerce.AuthService.API\Ecommerce.AuthService.API.csproj -c Release -o ./myapp
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
