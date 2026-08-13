@@ -24,7 +24,7 @@ jobs:
           dotnet-version: '10.x'
 
       - name: Build with dotnet
-        run: dotnet build --configuration Release
+        run: dotnet build AuthService\Ecommerce.AuthService\Ecommerce.AuthService.API\Ecommerce.AuthService.API.csproj --configuration Release
 
       - name: dotnet publish
         run: dotnet publish AuthService\Ecommerce.AuthService\Ecommerce.AuthService.API\Ecommerce.AuthService.API.csproj -c Release -o ./myapp
