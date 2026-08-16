@@ -23,6 +23,13 @@ jobs:
         with:
           dotnet-version: '10.x'
 
+      - name: Show repository structure
+        script:
+            - pwd
+            - echo "Repository root:"
+            - ls -la
+            - echo "All csproj files:"
+            - find . -name "*.csproj"
       - name: Build with dotnet
         run: dotnet build  Ecommerce.AuthService/Ecommerce.AuthService.API/Ecommerce.AuthService.API.csproj --configuration Release
 
