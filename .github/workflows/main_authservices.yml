@@ -17,24 +17,24 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+      - name: Check repository structure
+        shell: powershell
+        run: |
+          Write-Host "Current directory:"
+          Get-Location
+          Write-Host "All csproj files:"
+          Get-ChildItem -Path . -Filter *.csproj -Recurse | Select-Object FullName
 
       - name: Set up .NET Core
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '10.x'
 
-      - name: Show repository structure
-        script:
-            - pwd
-            - echo "Repository root:"
-            - ls -la
-            - echo "All csproj files:"
-            - find . -name "*.csproj"
       - name: Build with dotnet
         run: dotnet build  Ecommerce.AuthService/Ecommerce.AuthService.API/Ecommerce.AuthService.API.csproj --configuration Release
 
       - name: dotnet publish
-        run: dotnet publish  Ecommerce.AuthService/Ecommerce.AuthService.API/Ecommerce.AuthService.API.csproj -c Release -o "${{env.DOTNET_ROOT}}/myapp"
+        run: dotnet publish Ecommerce.AuthService/Ecommerce.AuthService.API/Ecommerce.AuthService.API.csproj -c Release -o "${{env.DOTNET_ROOT}}/myapp"
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
