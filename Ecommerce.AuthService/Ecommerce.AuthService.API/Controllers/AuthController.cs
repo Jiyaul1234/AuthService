@@ -32,7 +32,7 @@ namespace Ecommerce.AuthService.API.Controllers
             {
                 if (!ModelState.IsValid)
                 {
-                    _logger.LogWarning("Login request with invalid model state.");
+                    _logger.LogWarning("Login request with invalid model state. ");
                     return BadRequest(ModelState);
                 }
 
